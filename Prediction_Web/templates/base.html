@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Titanic survival prediction</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            font-family: "Roboto", sans-serif;
+            font-size: 15px;
+            background-color: #fdfdfd;
+        }
+        
+        #wrapper {
+            min-height: 100%;
+            padding-bottom: -100px;
+        }
+
+        .container{
+            padding-bottom: 100px;
+        }
+
+        .shadow {
+            box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel {
+            border: 1px solid gray;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px;
+        }
+
+        .site-footer {
+            {#background-color: #26272b;#}
+            padding: 45px 0 20px;
+            font-size: 15px;
+            line-height: 24px;
+            color: #737373;
+            width: 100%;
+            height: 100px;
+            margin-top: -100px;
+        }
+
+        .site-footer hr {
+            border-top-color: #bbb;
+            opacity: 0.5
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow" id="mainNav">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'home' %}">New prediction</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                        data-target="#navbarResponsive"
+                        aria-controls="navbarResponsive" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item text-black">
+                            <a class="nav-link text-black font-weight-bold" href="{% url 'train' %}">Train</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {% block content %}
+        {% endblock content %}
+    </div>
+    <footer class="py-3 bg-dark navbar-dark site-footer">
+        <hr/>
+        <p class="m-0 text-light text-center ">Titanic survival prediction 2020</p>
+    </footer>
+</body>
+</html>

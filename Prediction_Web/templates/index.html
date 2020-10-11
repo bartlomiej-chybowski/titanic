@@ -1,43 +1,78 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Home page</title>
-  </head>
-  <body>
-    <h1>Titanic survival prediction</h1>
-    <form action="{% url 'result' %}">
-      {% csrf_token %}
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <h1>Titanic survival prediction</h1>
 
-      <p>Passenger Class:</p>
-      <input type="text" name="pclass">
-      <br>
+        <div class="panel shadow">
+            <form action="{% url 'result' %}">
+                {% csrf_token %}
 
-      <p>Sex:</p>
-      <input type="text" name="sex">
-      <br>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="pclass">Passenger Class</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="pclass" id="pclass">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                </div>
 
-      <p>Age:</p>
-      <input type="text" name="age">
-      <br>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="sex">Sex</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="sex" id="sex">
+                            <option value="female">Female</option>
+                            <option value="male">Male</option>
+                        </select>
+                    </div>
+                </div>
 
-      <p>Sibsp:</p>
-      <input type="text" name="sibsp">
-      <br>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="age">Age</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="number" step="0.1" min="0" max="110" name="age" id="age">
+                    </div>
+                </div>
 
-      <p>Parch:</p>
-      <input type="text" name="parch">
-      <br>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="sibsp">Number of Siblings/Spouses Aboard</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="number" step="1" min="0" name="sibsp" id="sibsp">
+                    </div>
+                </div>
 
-      <p>Fare:</p>
-      <input type="text" name="fare">
-      <br>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="parch">Number of Parents/Children Aboard</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="number" step="1" min="0" name="parch" id="parch">
+                    </div>
+                </div>
 
-      <p>Embark </p>
-      <input type="text" name="embarked">
-      <br>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="fare">Passenger Fare (British pound)</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="number" step="0.1" min="0" name="fare" id="fare">
+                    </div>
+                </div>
 
-      <input type="submit" value='Get Predictions'>
-    </form>
-  </body>
-</html>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="emb">Port of Embarkation</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="embarked" id="embarked">
+                            <option value="C">Cherbourg</option>
+                            <option value="Q">Queenstown</option>
+                            <option value="S">Southampton</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <input type="submit"  class="btn btn-primary" value='Get Predictions'>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

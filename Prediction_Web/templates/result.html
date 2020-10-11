@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Result</title>
-  </head>
-  <body>
-    <h1>Prediction</h1>
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <h1>Titanic survival prediction - result</h1>
 
-    {{ result }}
-
-  </body>
-</html>
+        <div class="panel shadow">
+            {{ result }}
+        </div>
+    </div>
+{% endblock %}
