@@ -1,35 +1,32 @@
 from django.shortcuts import render
+import numpy as np
+from Prediction_Web.Titanic.views.predictor import Predictor
 
 
 def home(request):
     return render(request, 'index.html')
 
 
-def get_predictions(pclass, sex, age, sibsp, parch, fare, C, Q, S):
-    import pickle
-    model = pickle.load(open("titanic_survival_ml_model.sav", "rb"))
-    scaled = pickle.load(open("scaler.sav", "rb"))
-    prediction = model.predict(sc.transform([[pclass, sex, age, sibsp, parch, fare, C, Q, S]]))
-
-    if prediction == 0:
-        return "not survived"
-    elif prediction == 1:
-        return "survived"
-    else:
-        return "error"
+def get_predictions(pclass, sex, age, sibsp, parch, fare, embarked):
+    predictor = Predictor('Titanic/titanic.csv')
+    return predictor.predict(np.array([pclass, sex, age, sibsp, parch, fare, embarked]))
 
 
 def result(request):
     pclass = int(request.GET['pclass'])
-    sex = int(request.GET['sex'])
-    age = int(request.GET['age'])
-    sibsp = int(request.GET['sibsp'])
-    parch = int(request.GET['parch'])
-    fare = int(request.GET['fare'])
-    embC = int(request.GET['embC'])
-    embQ = int(request.GET['embQ'])
-    embS = int(request.GET['embS'])
+    sex = str(request.GET['sex'])
+    age = float(request.GET['age'])
+    sibsp = float(request.GET['sibsp'])
+    parch = float(request.GET['parch'])
+    fare = float(request.GET['fare'])
+    embarked = str(request.GET['embarked'])
 
-    result = get_predictions(p, sex, age, sibsp, parch, fare, embC, embQ, embS)
+    return render(request, 'result.html',
+                  {'result': get_predictions(pclass, sex, age, sibsp, parch, fare, embarked)})
 
-    return render(request, 'result.html', {'result':result})
+
+def train(request):
+    predictor = Predictor('Titanic/titanic.csv')
+    predictor.train()
+
+    return render(request, 'train.html')

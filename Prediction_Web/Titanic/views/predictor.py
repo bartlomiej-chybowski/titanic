@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 
 import numpy as np
 import pandas as pd
@@ -33,6 +33,7 @@ class Predictor:
             remainder='passthrough')
         self.scaler = StandardScaler()
         self.model = None
+        self.removed = []
 
     def _preprocessing(self) -> Tuple:
         # load dataset
@@ -51,7 +52,8 @@ class Predictor:
         imputer.fit(x[:, [1, 6]])
         x[:, [1, 6]] = imputer.transform(x[:, [1, 6]])
 
-        x = np.array(self.column_transformer.fit_transform(x))
+        self.column_transformer.fit(x)
+        x = np.array(self.column_transformer.transform(x))
         return x, y
 
     def _split_test_train(self, x: pd.Series, y: pd.Series) -> None:
@@ -68,7 +70,6 @@ class Predictor:
         self.x_test[:, 5:] = self.scaler.transform(self.x_test[:, 5:])
 
     def _backward_elimination(self, x: np.array, sl: int = 0.05) -> Tuple:
-        removed = []
         num_vars = len(x[0])
         for i in range(0, num_vars):
             regressor_ols = sm.OLS(self.y_train, x).fit()
@@ -77,9 +78,9 @@ class Predictor:
                 for j in range(0, num_vars - i):
                     if regressor_ols.pvalues[j].astype(float) == max_var:
                         x = np.delete(x, j, 1)
-                        removed.append(j)
+                        self.removed.append(j)
         regressor_ols.summary()
-        return x, removed
+        return x, self.removed
 
     def train(self):
         x, y = self._preprocessing()
@@ -94,7 +95,55 @@ class Predictor:
                   self._naive_bayes(x_train), self._random_forest(x_train)]
 
         model = max(models, key=lambda item: item[1])
-        dump({'model': model[0], 'accuracy': model[1], 'scaler': self.scaler}, 'model.joblib')
+        dump({
+            'model': model[0],
+            'accuracy': model[1],
+            'scaler': self.scaler,
+            'removed': self.removed,
+            'transformer': self.column_transformer
+        }, 'Titanic/model.joblib')
+
+    def predict(self, row: List) -> str:
+        """
+        Predict.
+
+        Parameters
+        ----------
+        row: List[pclass: int, sex: str, age: float, sibsp: float,
+                  parch: float, fare: float, embarked: str]
+
+        Returns
+        -------
+        str
+        """
+        if self.model is None:
+            model_dict = load('Titanic/model.joblib')
+            self.model = model_dict['model']
+            self.scaler = model_dict['scaler']
+            self.removed = model_dict['removed']
+            self.column_transformer = model_dict['transformer']
+
+        # one hot encoder
+        x = np.array(self.column_transformer.transform([row]))
+        print(x.shape)
+        # scaler
+        x[:, 5:] = self.scaler.transform(x[:, 5:])
+        print(x.shape)
+
+        for column in self.removed:
+            x = np.delete(x, column, 1)
+        print(x.shape)
+
+        return self._outcome(self.model.predict(x))
+
+    @staticmethod
+    def _outcome(prediction: int) -> str:
+        if prediction == 0:
+            return "not survived"
+        elif prediction == 1:
+            return "survived"
+        else:
+            return "error"
 
     def _decision_tree(self, x_train: np.array) -> Tuple:
         classifier = DecisionTreeClassifier(criterion='entropy')
@@ -151,7 +200,3 @@ class Predictor:
         accuracy = accuracy_score(self.y_test, y_pred)
         print('Random Forest {}'.format(accuracy))
         return classifier, accuracy
-
-
-predictor = Predictor('titanic.csv')
-predictor.train()
